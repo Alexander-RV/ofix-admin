@@ -1,0 +1,381 @@
+:root {
+  --bg: #eef2f9;
+  --surface: #ffffff;
+  --ink: #1b2540;
+  --muted: #6b7a99;
+  --line: #e3e9f3;
+  --brand: #2563eb;
+  --brand-soft: #e6eefe;
+  --brand-ink: #ffffff;
+  --danger: #c0392b;
+  font-family:
+    "Inter",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    Roboto,
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+}
+h1 {
+  font-size: 1.4rem;
+  margin: 0 0 1.25rem;
+}
+h2 {
+  font-size: 1.05rem;
+  margin: 0 0 1rem;
+}
+.muted {
+  color: var(--muted);
+}
+.error {
+  color: var(--danger);
+  margin: 0 0 1rem;
+}
+.success {
+  color: #15803d;
+  margin: 0 0 1rem;
+}
+.right {
+  text-align: right;
+}
+.link {
+  color: var(--brand);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.logo {
+  color: var(--brand);
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: 0.02em;
+}
+
+input,
+select {
+  font: inherit;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  width: 100%;
+}
+select {
+  width: auto;
+}
+input:focus-visible,
+select:focus-visible,
+.btn:focus-visible,
+a:focus-visible,
+.logout:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.btn {
+  font: inherit;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+.btn.primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--brand-ink);
+}
+.btn.danger {
+  color: var(--danger);
+  border-color: #f0c4be;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Tarjetas */
+.card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(27, 37, 64, 0.06);
+  margin-bottom: 1.25rem;
+}
+.card.table-wrap {
+  padding: 0.25rem 0;
+}
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+.card-head h2 {
+  margin: 0;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.stat {
+  margin: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+.stat strong {
+  font-size: 1.7rem;
+}
+
+/* Login */
+.login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(27, 37, 64, 0.08);
+  display: grid;
+  gap: 1rem;
+}
+.login-card .logo {
+  font-size: 2rem;
+}
+.login-card p {
+  margin: 0;
+}
+.login-card label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+/* Estructura */
+.shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+.sidebar {
+  background: var(--surface);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.sidebar .logo {
+  padding-left: 0.5rem;
+}
+.sidebar nav {
+  display: grid;
+  gap: 0.2rem;
+}
+.sidebar nav a,
+.sidebar nav .disabled,
+.logout {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+.sidebar nav a:hover {
+  background: var(--bg);
+}
+.sidebar nav a.active {
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-weight: 600;
+}
+.sidebar nav .disabled {
+  color: var(--muted);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.logout {
+  margin-top: auto;
+  background: none;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  padding-top: 1rem;
+}
+.main {
+  min-width: 0;
+}
+.topbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem 0;
+  font-size: 0.9rem;
+}
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--brand-ink);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+}
+.content {
+  padding: 1rem 2rem 2rem;
+  max-width: 1100px;
+}
+
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+.page-head h1 {
+  margin: 0;
+}
+.filters {
+  display: flex;
+  gap: 0.75rem;
+}
+.search {
+  max-width: 280px;
+}
+.inline-form {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 520px;
+  margin-bottom: 1.25rem;
+}
+.inline-form input {
+  flex: 1;
+}
+
+/* Tablas */
+.table-wrap {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+th {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 600;
+  background: #f6f8fc;
+}
+tr:last-child td {
+  border-bottom: 0;
+}
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* Etiquetas de estado */
+.pill {
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.pill.info {
+  background: #e0ebff;
+  color: #1d4ed8;
+}
+.pill.ok {
+  background: #dcf5e5;
+  color: #15803d;
+}
+.pill.warn {
+  background: #ffedd5;
+  color: #c2410c;
+}
+.pill.bad {
+  background: #fde2e2;
+  color: #b91c1c;
+}
+
+/* Gráfica */
+.chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.chart-txt {
+  font-size: 12px;
+  fill: var(--muted);
+}
+
+@media (max-width: 900px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .sidebar nav {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .logout {
+    margin-top: 0;
+    border-top: 0;
+    padding-top: 0.65rem;
+  }
+  .content,
+  .topbar {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
