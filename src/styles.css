@@ -378,4 +378,54 @@ tr:last-child td {
     padding-left: 1rem;
     padding-right: 1rem;
   }
+
+  textarea {
+    font: inherit;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    width: 100%;
+    resize: vertical;
+  }
+  textarea:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+
+  /* Ventana de confirmación */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(27, 37, 64, 0.45);
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    z-index: 50;
+  }
+  .modal {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 460px;
+    box-shadow: 0 10px 40px rgba(27, 37, 64, 0.25);
+    display: grid;
+    gap: 0.75rem;
+  }
+  .modal h2,
+  .modal p {
+    margin: 0;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+  }
+  .counter {
+    font-size: 0.8rem;
+    text-align: right;
+  }
 }
