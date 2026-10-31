@@ -7,16 +7,16 @@ const ESTADOS = {
   RECHAZADO: { texto: 'Rechazado', clase: 'bad' },
 }
 
-// Revisión de profesionales: el admin aprueba o rechaza (con motivo) cada registro.
-// La decisión le llega al profesional por correo.
+// Revisión y gestión de profesionales: aprobar / rechazar registros (con aviso
+// por correo) y suspender o reactivar cuentas.
 export default function Profesionales() {
   const [profesionales, setProfesionales] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
   const [busqueda, setBusqueda] = useState('')
-  const [filtro, setFiltro] = useState('PENDIENTE') // PENDIENTE | VERIFICADO | RECHAZADO | TODOS
+  const [filtro, setFiltro] = useState('PENDIENTE') // PENDIENTE | VERIFICADO | RECHAZADO | SUSPENDIDO | TODOS
 
-  // Ventana de confirmación: { tipo: 'aprobar' | 'rechazar', profesional }
+  // Ventana de confirmación: { tipo: 'aprobar' | 'rechazar' | 'suspender' | 'reactivar', profesional }
   const [modal, setModal] = useState(null)
   const [motivo, setMotivo] = useState('')
   const [errorModal, setErrorModal] = useState('')
@@ -67,10 +67,16 @@ export default function Profesionales() {
     try {
       if (tipo === 'aprobar') {
         await api(`/api/admin/profesionales/${profesional.id}/aprobar`, { method: 'PUT' })
-      } else {
+      } else if (tipo === 'rechazar') {
         await api(`/api/admin/profesionales/${profesional.id}/rechazar`, {
           method: 'PUT',
           body: { motivo: motivo.trim() },
+        })
+      } else {
+        // suspender / reactivar la cuenta
+        await api(`/api/admin/usuarios/${profesional.id}/estado`, {
+          method: 'PUT',
+          body: { activo: tipo === 'reactivar' },
         })
       }
       cerrar()
@@ -83,9 +89,16 @@ export default function Profesionales() {
   }
 
   const contar = (estado) => profesionales.filter((p) => p.estadoVerificacion === estado).length
+  const suspendidos = profesionales.filter((p) => p.activo === false).length
+
+  function coincideFiltro(p) {
+    if (filtro === 'TODOS') return true
+    if (filtro === 'SUSPENDIDO') return p.activo === false
+    return p.estadoVerificacion === filtro
+  }
 
   const filtrados = profesionales
-    .filter((p) => filtro === 'TODOS' || p.estadoVerificacion === filtro)
+    .filter(coincideFiltro)
     .filter((p) =>
       `${p.nombre} ${p.apellido} ${p.email} ${p.profesion || ''}`
         .toLowerCase()
@@ -93,6 +106,13 @@ export default function Profesionales() {
     )
 
   const p = modal?.profesional
+
+  const BOTON = {
+    aprobar: { texto: 'Aprobar y avisar', clase: 'primary' },
+    rechazar: { texto: 'Rechazar y avisar', clase: 'danger' },
+    suspender: { texto: 'Suspender cuenta', clase: 'danger' },
+    reactivar: { texto: 'Reactivar cuenta', clase: 'primary' },
+  }
 
   return (
     <>
@@ -103,6 +123,7 @@ export default function Profesionales() {
             <option value="PENDIENTE">En revisión ({contar('PENDIENTE')})</option>
             <option value="VERIFICADO">Verificados ({contar('VERIFICADO')})</option>
             <option value="RECHAZADO">Rechazados ({contar('RECHAZADO')})</option>
+            <option value="SUSPENDIDO">Suspendidos ({suspendidos})</option>
             <option value="TODOS">Todos ({profesionales.length})</option>
           </select>
           <input className="search" placeholder="Buscar por nombre, correo u oficio" value={busqueda}
@@ -123,6 +144,7 @@ export default function Profesionales() {
             <tbody>
               {filtrados.map((prof) => {
                 const estado = ESTADOS[prof.estadoVerificacion] || ESTADOS.PENDIENTE
+                const suspendido = prof.activo === false
                 return (
                   <tr key={prof.id}>
                     <td>
@@ -137,7 +159,8 @@ export default function Profesionales() {
                     </td>
                     <td>{(prof.categorias || []).join(', ') || '—'}</td>
                     <td>
-                      <span className={`pill ${estado.clase}`}>{estado.texto}</span>
+                      <span className={`pill ${estado.clase}`}>{estado.texto}</span>{' '}
+                      {suspendido && <span className="pill bad">Suspendido</span>}
                       {prof.estadoVerificacion === 'RECHAZADO' && prof.motivoRechazo && (
                         <div className="muted">Motivo: {prof.motivoRechazo}</div>
                       )}
@@ -153,6 +176,18 @@ export default function Profesionales() {
                         <button className="btn danger" onClick={() => abrir('rechazar', prof)}>
                           Rechazar
                         </button>
+                      )}
+                      {/* Suspender / reactivar: la cuenta ya fue verificada */}
+                      {prof.estadoVerificacion === 'VERIFICADO' && (
+                        suspendido ? (
+                          <button className="btn" onClick={() => abrir('reactivar', prof)}>
+                            Reactivar
+                          </button>
+                        ) : (
+                          <button className="btn danger" onClick={() => abrir('suspender', prof)}>
+                            Suspender
+                          </button>
+                        )
                       )}
                     </td>
                   </tr>
@@ -170,7 +205,7 @@ export default function Profesionales() {
         <div className="modal-backdrop" onClick={() => !enviando && cerrar()}>
           <div className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo"
                onClick={(e) => e.stopPropagation()}>
-            {modal.tipo === 'aprobar' ? (
+            {modal.tipo === 'aprobar' && (
               <>
                 <h2 id="modal-titulo">Aprobar profesional</h2>
                 <p>
@@ -179,7 +214,9 @@ export default function Profesionales() {
                 </p>
                 <p className="muted">Se le enviará un correo a {p.email} avisándole.</p>
               </>
-            ) : (
+            )}
+
+            {modal.tipo === 'rechazar' && (
               <>
                 <h2 id="modal-titulo">Rechazar registro</h2>
                 <p>
@@ -198,18 +235,36 @@ export default function Profesionales() {
               </>
             )}
 
+            {modal.tipo === 'suspender' && (
+              <>
+                <h2 id="modal-titulo">Suspender cuenta</h2>
+                <p>
+                  ¿Suspender la cuenta de <strong>{p.nombre} {p.apellido}</strong>? No podrá
+                  iniciar sesión ni enviar ofertas hasta que la reactives.
+                </p>
+              </>
+            )}
+
+            {modal.tipo === 'reactivar' && (
+              <>
+                <h2 id="modal-titulo">Reactivar cuenta</h2>
+                <p>
+                  ¿Reactivar la cuenta de <strong>{p.nombre} {p.apellido}</strong>? Volverá a
+                  poder iniciar sesión y ofertar.
+                </p>
+              </>
+            )}
+
             {errorModal && <p className="error" role="alert">{errorModal}</p>}
 
             <div className="modal-actions">
               <button className="btn" onClick={cerrar} disabled={enviando}>Cancelar</button>
               <button
-                className={`btn ${modal.tipo === 'aprobar' ? 'primary' : 'danger'}`}
+                className={`btn ${BOTON[modal.tipo].clase}`}
                 onClick={confirmar}
                 disabled={enviando}
               >
-                {enviando
-                  ? 'Enviando…'
-                  : modal.tipo === 'aprobar' ? 'Aprobar y avisar' : 'Rechazar y avisar'}
+                {enviando ? 'Procesando…' : BOTON[modal.tipo].texto}
               </button>
             </div>
           </div>
